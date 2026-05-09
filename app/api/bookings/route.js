@@ -1,6 +1,26 @@
 import pool from '@/lib/db';
 import { requireRole } from '@/lib/auth';
 
+// GET /api/bookings — This will list this user's bookings with event info
+export async function GET() {
+  try {
+    const { user, error } = await requireRole('attendee');
+    if (error) return error;
+
+    // This will join events so we can show title, when, and where on the my bookings page
+    const [rows] = await pool.query(
+      'SELECT b.id, b.event_id, b.booked_at, b.status, e.title, e.date, e.location ' +
+        'FROM bookings b JOIN events e ON e.id = b.event_id ' +
+        'WHERE b.user_id = ? ORDER BY b.booked_at DESC',
+      [user.id]
+    );
+
+    return Response.json(rows, { status: 200 });
+  } catch (err) {
+    return Response.json({ message: 'Server error' }, { status: 500 });
+  }
+}
+
 // POST /api/bookings - attendee books a spot on an event
 export async function POST(req) {
   try {
