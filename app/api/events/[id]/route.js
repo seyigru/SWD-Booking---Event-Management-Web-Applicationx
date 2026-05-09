@@ -50,3 +50,22 @@ export async function PUT(req, { params }) {
     return Response.json({ message: 'Server error' }, { status: 500 });
   }
 }
+
+// DELETE — organiser (own event) or admin.
+export async function DELETE(req, { params }) {
+  try {
+    const { user, error } = await requireRole('organiser', 'admin');
+    if (error) return error;
+
+    const { id } = await params;
+    const [check] = await pool.query('SELECT organiser_id FROM events WHERE id = ?', [id]);
+    if (!check[0]) return Response.json({ message: 'Event not found' }, { status: 404 });
+    if (user.role !== 'admin' && check[0].organiser_id !== user.id)
+      return Response.json({ message: 'You can only delete your own events' }, { status: 403 });
+
+    await pool.query('DELETE FROM events WHERE id = ?', [id]);
+    return Response.json({ message: 'Event deleted' }, { status: 200 });
+  } catch (err) {
+    return Response.json({ message: 'Server error' }, { status: 500 });
+  }
+}
