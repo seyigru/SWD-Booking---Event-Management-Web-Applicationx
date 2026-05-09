@@ -24,3 +24,31 @@ export async function GET(req) {
     return Response.json({ message: 'Server error' }, { status: 500 });
   }
 }
+
+// POST — organiser only. Creates a new event owned by the logged-in organiser.
+export async function POST(req) {
+  try {
+    const { user, error } = await requireRole('organiser');
+    if (error) return error;
+
+    const { title, description, date, location, capacity, price } = await req.json();
+
+    // Server-side validation
+    if (!title || !date || !location)
+      return Response.json({ message: 'Title, date and location are required' }, { status: 400 });
+    if (!capacity || capacity < 1)
+      return Response.json({ message: 'Capacity must be at least 1' }, { status: 400 });
+    if (price === undefined || price < 0)
+      return Response.json({ message: 'Price cannot be negative' }, { status: 400 });
+    if (new Date(date) <= new Date())
+      return Response.json({ message: 'Event date must be in the future' }, { status: 400 });
+
+    await pool.query(
+      'INSERT INTO events (title, description, date, location, capacity, price, organiser_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [title, description, date, location, capacity, price, user.id]
+    );
+    return Response.json({ message: 'Event created' }, { status: 201 });
+  } catch (err) {
+    return Response.json({ message: 'Server error' }, { status: 500 });
+  }
+}
