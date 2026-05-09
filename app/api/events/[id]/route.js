@@ -1,7 +1,7 @@
 import pool from '@/lib/db';
 import { requireRole } from '@/lib/auth';
 
-// GET — public. Single event with organiser name (JOIN) and confirmed booking count (LEFT JOIN).
+// GET, public single event with organiser name JOIN and confirmed booking count LEFT JOIN
 export async function GET(req, { params }) {
   try {
     const { id } = await params;
@@ -19,16 +19,16 @@ export async function GET(req, { params }) {
   }
 }
 
-// PUT — organiser only. The organiser must own the event before they can edit it.
+// PUT, organiser must own the event or admin because of system-wide oversight
 export async function PUT(req, { params }) {
   try {
-    const { user, error } = await requireRole('organiser');
+    const { user, error } = await requireRole('organiser', 'admin');
     if (error) return error;
 
     const { id } = await params;
     const [check] = await pool.query('SELECT organiser_id FROM events WHERE id = ?', [id]);
     if (!check[0]) return Response.json({ message: 'Event not found' }, { status: 404 });
-    if (check[0].organiser_id !== user.id)
+    if (user.role !== 'admin' && check[0].organiser_id !== user.id)
       return Response.json({ message: 'You can only edit your own events' }, { status: 403 });
 
     const { title, description, date, location, capacity, price } = await req.json();
@@ -51,7 +51,7 @@ export async function PUT(req, { params }) {
   }
 }
 
-// DELETE — organiser (own event) or admin.
+// DELETE — organiser (own event) or admin
 export async function DELETE(req, { params }) {
   try {
     const { user, error } = await requireRole('organiser', 'admin');
