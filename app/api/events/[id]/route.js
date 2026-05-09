@@ -18,3 +18,35 @@ export async function GET(req, { params }) {
     return Response.json({ message: 'Server error' }, { status: 500 });
   }
 }
+
+// PUT — organiser only. The organiser must own the event before they can edit it.
+export async function PUT(req, { params }) {
+  try {
+    const { user, error } = await requireRole('organiser');
+    if (error) return error;
+
+    const { id } = await params;
+    const [check] = await pool.query('SELECT organiser_id FROM events WHERE id = ?', [id]);
+    if (!check[0]) return Response.json({ message: 'Event not found' }, { status: 404 });
+    if (check[0].organiser_id !== user.id)
+      return Response.json({ message: 'You can only edit your own events' }, { status: 403 });
+
+    const { title, description, date, location, capacity, price } = await req.json();
+
+    // Server-side validation — same rules as POST
+    if (!title || !date || !location)
+      return Response.json({ message: 'Title, date and location are required' }, { status: 400 });
+    if (!capacity || capacity < 1)
+      return Response.json({ message: 'Capacity must be at least 1' }, { status: 400 });
+    if (price === undefined || price < 0)
+      return Response.json({ message: 'Price cannot be negative' }, { status: 400 });
+
+    await pool.query(
+      'UPDATE events SET title = ?, description = ?, date = ?, location = ?, capacity = ?, price = ? WHERE id = ?',
+      [title, description, date, location, capacity, price, id]
+    );
+    return Response.json({ message: 'Event updated' }, { status: 200 });
+  } catch (err) {
+    return Response.json({ message: 'Server error' }, { status: 500 });
+  }
+}
