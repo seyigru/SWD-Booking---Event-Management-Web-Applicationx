@@ -5,9 +5,18 @@ export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
     const query = searchParams.get('query');
+    const mine = searchParams.get('mine');
 
     let rows;
-    if (query) {
+    if (mine === 'true') {
+      // Organiser dashboard — only the logged-in organiser's own events
+      const { user, error } = await requireRole('organiser');
+      if (error) return error;
+      [rows] = await pool.query(
+        'SELECT e.*, u.name AS organiser_name FROM events e JOIN users u ON e.organiser_id = u.id WHERE e.organiser_id = ? ORDER BY e.date ASC',
+        [user.id]
+      );
+    } else if (query) {
       // Search feature — LIKE with parameterised query, never string interpolation
       [rows] = await pool.query(
         'SELECT e.*, u.name AS organiser_name FROM events e JOIN users u ON e.organiser_id = u.id WHERE e.title LIKE ? ORDER BY e.date ASC',
