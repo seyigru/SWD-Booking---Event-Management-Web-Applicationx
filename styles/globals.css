@@ -1,0 +1,311 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Syne:wght@500;600;700;800&display=swap');
+
+:root {
+  --bg-page: #f7f5f2;
+  --text-main: #1a1a1a;
+  --text-muted: #5c5a55;
+  --accent: #c1603b;
+  --accent-hover: #a34f30;
+  --border-soft: #d9d4cc;
+  --error-text: #9a2f2f;
+  --success-text: #2f5c45;
+  --card-shadow: 0 1px 3px rgba(26, 26, 26, 0.07);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--text-main);
+  background: var(--bg-page);
+}
+
+h1,
+h2,
+h3,
+.page-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+h1,
+.page-title {
+  font-size: 1.75rem;
+  margin: 0 0 22px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* main page container (browse events, my bookings, organiser dashboard etc) */
+.page-container {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 28px 22px 44px 18px;
+}
+
+/* login / register form container */
+.form-container {
+  max-width: 420px;
+  margin: 36px auto;
+  padding: 22px 14px 32px;
+}
+
+/* event cards grid */
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 22px 18px;
+  margin-top: 14px;
+}
+
+/* my bookings page */
+.bookings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 8px;
+}
+
+.muted {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* navbar */
+.navbar {
+  border-bottom: 1px solid var(--border-soft);
+  background: var(--bg-page);
+}
+
+.navbar__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 14px 22px 13px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+}
+
+.navbar__logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--text-main);
+}
+
+.navbar__logo:hover {
+  text-decoration: none;
+  color: var(--accent);
+}
+
+.navbar__links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px 22px;
+}
+
+.navbar__link {
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+
+.navbar__logout {
+  font: inherit;
+  cursor: pointer;
+}
+
+/* cards (event and booking) */
+.event-card,
+.booking-card {
+  border: 1px solid var(--border-soft);
+  border-radius: 2px;
+  padding: 20px 22px 24px 18px;
+  background: #f3f1ec;
+  box-shadow: var(--card-shadow);
+}
+
+.event-card__title,
+.booking-card__title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.1rem;
+  margin: 0 0 10px;
+}
+
+.event-card__meta,
+.booking-card__meta {
+  margin: 0 0 6px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.event-card__price {
+  margin: 12px 0 10px;
+  font-weight: 600;
+}
+
+.event-card__spots {
+  margin: 0 0 18px;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.booking-card__status {
+  margin: 0 0 16px;
+  font-size: 0.9rem;
+}
+
+.status-badge {
+  text-transform: capitalize;
+}
+
+/* buttons */
+.btn {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 11px 22px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.btn--primary {
+  background: var(--accent);
+  color: #fdfcfa;
+  border-color: var(--accent);
+}
+
+.btn--primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.btn--secondary {
+  background: transparent;
+  color: var(--text-main);
+  border-color: var(--border-soft);
+}
+
+.btn--secondary:hover {
+  border-color: var(--text-muted);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--text-muted);
+  border-color: transparent;
+  padding: 8px 12px;
+}
+
+.btn--ghost:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+/* forms (login, register, organiser forms)*/
+form {
+  margin-top: 14px;
+}
+
+.form-container input,
+.page-container input,
+.form-container textarea,
+.page-container textarea {
+  display: block;
+  width: 100%;
+  margin-bottom: 18px;
+  padding: 10px 4px 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  border: none;
+  border-bottom: 2px solid var(--border-soft);
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-main);
+}
+
+.form-container input:focus,
+.page-container input:focus,
+.form-container textarea:focus,
+.page-container textarea:focus {
+  outline: none;
+  border-bottom-color: var(--accent);
+}
+
+/* plain submit buttons on login, register, and organiser forms */
+.form-container button[type='submit'],
+.page-container form > button[type='submit'] {
+  margin-top: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 11px 22px;
+  border-radius: 3px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fdfcfa;
+  cursor: pointer;
+}
+
+.form-container button[type='submit']:hover,
+.page-container form > button[type='submit']:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.error-msg {
+  color: var(--error-text);
+  font-size: 0.92rem;
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border-left: 3px solid var(--error-text);
+  background: rgba(154, 47, 47, 0.06);
+}
+
+.success-msg {
+  color: var(--success-text);
+  font-size: 0.92rem;
+  margin: 0 0 18px;
+}
+
+/* small screens*/
+@media (max-width: 600px) {
+  .navbar__inner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 14px 14px;
+  }
+
+  .navbar__links {
+    justify-content: flex-start;
+  }
+
+  .page-container {
+    padding: 22px 14px 36px;
+  }
+
+  .events-grid {
+    gap: 16px;
+  }
+}
