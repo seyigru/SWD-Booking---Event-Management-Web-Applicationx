@@ -42,6 +42,8 @@ export async function PUT(req, { params }) {
       return Response.json({ message: 'Capacity must be at least 1' }, { status: 400 });
     if (price === undefined || price < 0)
       return Response.json({ message: 'Price cannot be negative' }, { status: 400 });
+    if (new Date(date) <= new Date())
+      return Response.json({ message: 'Event date must be in the future' }, { status: 400 });
 
     await pool.query(
       'UPDATE events SET title = ?, description = ?, date = ?, location = ?, capacity = ?, price = ? WHERE id = ?',
