@@ -42,33 +42,37 @@ export default function OrganiserPage() {
       <h1>My Events</h1>
       {error && <p className="error-msg">{error}</p>}
       <Link href="/organiser/create">Create new event</Link>
-      <table>
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Date</th>
-            <th>Location</th>
-            <th>Capacity</th>
-            <th>Price</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {events.map(event => (
-            <tr key={event.id}>
-              <td>{event.title}</td>
-              <td>{new Date(event.date).toLocaleString()}</td>
-              <td>{event.location}</td>
-              <td>{event.capacity}</td>
-              <td>{event.price}</td>
-              <td>
-                <Link href={`/organiser/edit/${event.id}`}>Edit</Link>
-                <button onClick={() => deleteEvent(event.id)}>Delete</button>
-              </td>
+      {events.length === 0 ? (
+        <p>You have not created any events yet</p>
+      ) : (
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Date</th>
+              <th>Location</th>
+              <th>Capacity</th>
+              <th>Price</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {events.map(event => (
+              <tr key={event.id}>
+                <td>{event.title}</td>
+                <td>{new Date(event.date).toLocaleString()}</td>
+                <td>{event.location}</td>
+                <td>{event.capacity}</td>
+                <td>{event.price}</td>
+                <td>
+                  <Link href={`/organiser/edit/${event.id}`}>Edit</Link>
+                  <button onClick={() => deleteEvent(event.id)}>Delete</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }
