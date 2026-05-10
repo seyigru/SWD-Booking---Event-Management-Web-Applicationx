@@ -20,7 +20,7 @@ export default function AdminPage() {
     const checkSession = async () => {
       const res = await fetch('/api/auth/session');
       const data = await res.json();
-      if (!res.ok || data.role !== 'admin') { router.push('/login'); return; }
+      if (!res.ok || data.user?.role !== 'admin') { router.push('/login'); return; }
       fetchUsers();
     };
     checkSession();
