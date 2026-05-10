@@ -56,6 +56,7 @@ export default function CreateEventPage() {
           placeholder="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          required
         />
         <textarea
           placeholder="Description"
@@ -66,18 +67,22 @@ export default function CreateEventPage() {
           type="datetime-local"
           value={date}
           onChange={(e) => setDate(e.target.value)}
+          required
         />
         <input
           type="text"
           placeholder="Location"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
+          required
         />
         <input
           type="number"
           placeholder="Capacity"
           value={capacity}
           onChange={(e) => setCapacity(e.target.value)}
+          min="1"
+          required
         />
         <input
           type="number"
@@ -85,6 +90,8 @@ export default function CreateEventPage() {
           placeholder="Price"
           value={price}
           onChange={(e) => setPrice(e.target.value)}
+          min="0"
+          required
         />
         <button type="submit" disabled={submitting}>
           {submitting ? 'Creating...' : 'Create Event'}
