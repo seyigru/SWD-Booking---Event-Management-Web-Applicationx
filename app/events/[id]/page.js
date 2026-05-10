@@ -10,6 +10,7 @@ export default function EventDetailPage() {
   const [message, setMessage] = useState('');
 
   // pulls the event with organiser name and the live confirmed bookings count
+  // try/catch falls back to a friendly message if the fetch itself throws, e.g. network drop
   const fetchEvent = async () => {
     try {
       const res = await fetch(`/api/events/${id}`);
@@ -25,6 +26,7 @@ export default function EventDetailPage() {
   useEffect(() => { fetchEvent(); }, [id]);
 
   // posts a booking, the bookings API enforces role, capacity and double-book checks server-side
+  // try/catch keeps a network failure from breaking the page and error shows in the same error-msg slot
   const bookEvent = async () => {
     setError(''); setMessage('');
     try {

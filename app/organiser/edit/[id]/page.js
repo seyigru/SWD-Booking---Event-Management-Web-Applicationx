@@ -78,6 +78,7 @@ export default function EditEventPage() {
     <div className="form-container">
       <h1>Edit Event</h1>
       {error && <p className="error-msg">{error}</p>}
+      {/* required and min on inputs give browser-level validation and server still validates everything */}
       <form onSubmit={handleSubmit}>
         <input
           type="text"

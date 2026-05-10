@@ -42,6 +42,7 @@ export async function PUT(req, { params }) {
       return Response.json({ message: 'Capacity must be at least 1' }, { status: 400 });
     if (price === undefined || price < 0)
       return Response.json({ message: 'Price cannot be negative' }, { status: 400 });
+    // block organisers from rescheduling an event into the past, same rule as POST
     if (new Date(date) <= new Date())
       return Response.json({ message: 'Event date must be in the future' }, { status: 400 });
 
@@ -68,6 +69,7 @@ export async function DELETE(req, { params }) {
     if (user.role !== 'admin' && check[0].organiser_id !== user.id)
       return Response.json({ message: 'You can only delete your own events' }, { status: 403 });
 
+    // bookings have a foreign key to events, refuse cleanly with 409 if any exist instead of letting MySQL throw
     const [bookings] = await pool.query('SELECT id FROM bookings WHERE event_id = ?', [id]);
     if (bookings.length > 0)
       return Response.json({ message: 'Cannot delete event with existing bookings' }, { status: 409 });

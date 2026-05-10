@@ -42,6 +42,7 @@ export default function OrganiserPage() {
       <h1>My Events</h1>
       {error && <p className="error-msg">{error}</p>}
       <Link href="/organiser/create">Create new event</Link>
+      {/* show a friendly empty state when the organiser has no events instead of an empty table body */}
       {events.length === 0 ? (
         <p>You have not created any events yet</p>
       ) : (
