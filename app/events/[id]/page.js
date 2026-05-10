@@ -2,12 +2,14 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 
+// public event detail page, anyone can view, attendees can book
 export default function EventDetailPage() {
   const { id } = useParams();
   const [event, setEvent] = useState(null);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
 
+  // pulls the event with organiser name and the live confirmed bookings count
   const fetchEvent = async () => {
     const res = await fetch(`/api/events/${id}`);
     const data = await res.json();
@@ -15,9 +17,10 @@ export default function EventDetailPage() {
     setEvent(data);
   };
 
+  // re-runs if the [id] in the URL changes, useful for client-side navigation between events
   useEffect(() => { fetchEvent(); }, [id]);
 
-  // Book button POSTs to /api/bookings
+  // posts a booking, the bookings API enforces role, capacity and double-book checks server-side
   const bookEvent = async () => {
     setError(''); setMessage('');
     const res = await fetch('/api/bookings', {
@@ -27,9 +30,11 @@ export default function EventDetailPage() {
     const data = await res.json();
     if (!res.ok) { setError(data.message); return; }
     setMessage('Booking confirmed!');
+    // refetch so the spots-remaining number updates on screen
     fetchEvent();
   };
 
+  // early returns keep the main render clean, only one of these branches runs at a time
   if (error) return (
     <div className="page-container">
       <p className="error-msg">{error}</p>
@@ -37,6 +42,7 @@ export default function EventDetailPage() {
   );
   if (!event) return <div className="page-container"><p>Loading...</p></div>;
 
+  // capacity comes from the event row, bookings_count from the LEFT JOIN in GET /api/events/[id]
   const spotsRemaining = event.capacity - Number(event.bookings_count);
 
   return (

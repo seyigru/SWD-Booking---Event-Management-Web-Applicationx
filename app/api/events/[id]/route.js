@@ -1,7 +1,8 @@
 import pool from '@/lib/db';
 import { requireRole } from '@/lib/auth';
 
-// GET, public single event with organiser name JOIN and confirmed booking count LEFT JOIN
+// returns one event with organiser name and a count of confirmed bookings
+// LEFT JOIN keeps events with zero bookings, an inner JOIN would hide them
 export async function GET(req, { params }) {
   try {
     const { id } = await params;
@@ -19,13 +20,14 @@ export async function GET(req, { params }) {
   }
 }
 
-// PUT, organiser must own the event or admin because of system-wide oversight
+// updates an event, organiser must own it, admins can edit any event for system-wide oversight
 export async function PUT(req, { params }) {
   try {
     const { user, error } = await requireRole('organiser', 'admin');
     if (error) return error;
 
     const { id } = await params;
+    // look up the owner first so we can do the ownership check before touching anything
     const [check] = await pool.query('SELECT organiser_id FROM events WHERE id = ?', [id]);
     if (!check[0]) return Response.json({ message: 'Event not found' }, { status: 404 });
     if (user.role !== 'admin' && check[0].organiser_id !== user.id)
@@ -33,7 +35,7 @@ export async function PUT(req, { params }) {
 
     const { title, description, date, location, capacity, price } = await req.json();
 
-    // Server-side validation — same rules as POST
+    // same field validation as POST, never trust the client
     if (!title || !date || !location)
       return Response.json({ message: 'Title, date and location are required' }, { status: 400 });
     if (!capacity || capacity < 1)
@@ -51,13 +53,14 @@ export async function PUT(req, { params }) {
   }
 }
 
-// DELETE — organiser (own event) or admin
+// deletes an event, organiser must own it, admins can delete any event
 export async function DELETE(req, { params }) {
   try {
     const { user, error } = await requireRole('organiser', 'admin');
     if (error) return error;
 
     const { id } = await params;
+    // ownership check, same shape as PUT, runs before any destructive query
     const [check] = await pool.query('SELECT organiser_id FROM events WHERE id = ?', [id]);
     if (!check[0]) return Response.json({ message: 'Event not found' }, { status: 404 });
     if (user.role !== 'admin' && check[0].organiser_id !== user.id)
