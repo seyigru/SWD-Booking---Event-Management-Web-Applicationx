@@ -2,6 +2,7 @@ import pool from '@/lib/db';
 import { requireRole } from '@/lib/auth';
 
 // returns all events with organiser name, supports optional title search via LIKE
+// also supports ?mine=true for the organiser dashboard, returns only their own events
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
@@ -10,7 +11,7 @@ export async function GET(req) {
 
     let rows;
     if (mine === 'true') {
-      // Organiser dashboard — only the logged-in organiser's own events
+      // dashboard mode, must be a logged-in organiser, filters by their user id
       const { user, error } = await requireRole('organiser');
       if (error) return error;
       [rows] = await pool.query(
@@ -18,12 +19,13 @@ export async function GET(req) {
         [user.id]
       );
     } else if (query) {
-      // Search feature — LIKE with parameterised query, never string interpolation
+      // search by title, parameterised LIKE so user input never goes into the SQL string
       [rows] = await pool.query(
         'SELECT e.*, u.name AS organiser_name FROM events e JOIN users u ON e.organiser_id = u.id WHERE e.title LIKE ? ORDER BY e.date ASC',
         [`%${query}%`]
       );
     } else {
+      // public browse, all events with the organiser name joined in
       [rows] = await pool.query(
         'SELECT e.*, u.name AS organiser_name FROM events e JOIN users u ON e.organiser_id = u.id ORDER BY e.date ASC'
       );
@@ -35,7 +37,7 @@ export async function GET(req) {
   }
 }
 
-// POST — organiser only. Creates a new event owned by the logged-in organiser.
+// creates a new event owned by the logged-in organiser, blocks anyone else via requireRole
 export async function POST(req) {
   try {
     const { user, error } = await requireRole('organiser');
@@ -43,7 +45,7 @@ export async function POST(req) {
 
     const { title, description, date, location, capacity, price } = await req.json();
 
-    // Server-side validation
+    // server-side validation, never trust the client to enforce these
     if (!title || !date || !location)
       return Response.json({ message: 'Title, date and location are required' }, { status: 400 });
     if (!capacity || capacity < 1)
@@ -53,6 +55,7 @@ export async function POST(req) {
     if (new Date(date) <= new Date())
       return Response.json({ message: 'Event date must be in the future' }, { status: 400 });
 
+    // organiser_id comes from the session, not the request body, so users cannot spoof ownership
     await pool.query(
       'INSERT INTO events (title, description, date, location, capacity, price, organiser_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
       [title, description, date, location, capacity, price, user.id]
