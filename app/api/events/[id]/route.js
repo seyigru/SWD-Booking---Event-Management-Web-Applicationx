@@ -68,6 +68,10 @@ export async function DELETE(req, { params }) {
     if (user.role !== 'admin' && check[0].organiser_id !== user.id)
       return Response.json({ message: 'You can only delete your own events' }, { status: 403 });
 
+    const [bookings] = await pool.query('SELECT id FROM bookings WHERE event_id = ?', [id]);
+    if (bookings.length > 0)
+      return Response.json({ message: 'Cannot delete event with existing bookings' }, { status: 409 });
+
     await pool.query('DELETE FROM events WHERE id = ?', [id]);
     return Response.json({ message: 'Event deleted' }, { status: 200 });
   } catch (err) {
