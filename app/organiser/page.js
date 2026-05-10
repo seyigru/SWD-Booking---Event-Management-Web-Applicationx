@@ -2,28 +2,39 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
+// dashboard for organisers, lists their own events with edit and delete actions
 export default function OrganiserPage() {
   const [events, setEvents] = useState([]);
   const [error, setError] = useState('');
 
-  // Fetch only the logged-in organiser's own events (server filters via ?mine=true)
+  // pulls only the logged-in organiser's events, server reads the session and filters
   const fetchEvents = async () => {
-    const res = await fetch('/api/events?mine=true');
-    const data = await res.json();
-    if (!res.ok) { setError(data.message); return; }
-    setEvents(data);
+    try {
+      const res = await fetch('/api/events?mine=true');
+      const data = await res.json();
+      if (!res.ok) { setError(data.message); return; }
+      setEvents(data);
+    } catch (err) {
+      setError('Could not load events. Please try again');
+    }
   };
 
+  // load once on mount, empty dependency array means it does not refetch on every render
   useEffect(() => { fetchEvents(); }, []);
 
+  // confirm before deleting so a stray click cannot wipe an event, then refetch to refresh the list
   const deleteEvent = async (id) => {
     if (!confirm('Are you sure you want to delete this event?')) return;
-    const res = await fetch(`/api/events/${id}`, {
-      method: 'DELETE',
-    });
-    const data = await res.json();
-    if (!res.ok) { setError(data.message); return; }
-    fetchEvents();
+    try {
+      const res = await fetch(`/api/events/${id}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.message); return; }
+      fetchEvents();
+    } catch (err) {
+      setError('Could not delete event. Please try again');
+    }
   };
 
   return (
