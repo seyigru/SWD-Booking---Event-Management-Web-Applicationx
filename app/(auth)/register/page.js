@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
@@ -8,6 +9,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e) => {
@@ -19,11 +21,14 @@ export default function RegisterPage() {
       return;
     }
 
+    setLoading(true);
+
     const res = await fetch('/api/auth/register', {
       method: 'POST',
       body: JSON.stringify({ name, email, password }),
     });
     const data = await res.json();
+    setLoading(false);
 
     if (!res.ok) {
       setError(data.message);
@@ -62,9 +67,9 @@ export default function RegisterPage() {
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
         />
-        <button type="submit">Register</button>
+        <button type="submit" disabled={loading}>Register</button>
       </form>
-      <p>Already have an account? <a href="/login">Login</a></p>
+      <p>Already have an account? <Link href="/login">Login</Link></p>
     </div>
   );
 }

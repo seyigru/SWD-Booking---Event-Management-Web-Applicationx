@@ -1,22 +1,26 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     const res = await fetch('/api/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
     const data = await res.json();
+    setLoading(false);
 
     if (!res.ok) {
       setError(data.message);
@@ -45,9 +49,9 @@ export default function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type="submit">Login</button>
+        <button type="submit" disabled={loading}>Login</button>
       </form>
-      <p>Don't have an account? <a href="/register">Register</a></p>
+      <p>Don't have an account? <Link href="/register">Register</Link></p>
     </div>
   );
 }
