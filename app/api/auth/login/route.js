@@ -2,6 +2,7 @@ import pool from '@/lib/db';
 import bcrypt from 'bcryptjs';
 import { createSession } from '@/lib/session';
 
+// validates email and password, compares with bcrypt, sets session cookie on success
 export async function POST(req) {
   try {
     const { email, password } = await req.json();

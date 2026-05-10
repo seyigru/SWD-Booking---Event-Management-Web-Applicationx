@@ -1,6 +1,7 @@
 import pool from '@/lib/db';
 import { requireRole } from '@/lib/auth';
 
+// updates a user's role, validates role value, admin only
 export async function PUT(req, { params }) {
   try {
     const { user, error } = await requireRole('admin');
@@ -23,6 +24,7 @@ export async function PUT(req, { params }) {
   }
 }
 
+// removes user and their sessions, blocks self-deletion, admin only
 export async function DELETE(req, { params }) {
   try {
     const { user, error } = await requireRole('admin');

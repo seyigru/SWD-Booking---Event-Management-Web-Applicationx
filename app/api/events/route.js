@@ -1,6 +1,7 @@
 import pool from '@/lib/db';
 import { requireRole } from '@/lib/auth';
 
+// returns all events with organiser name, supports optional title search via LIKE
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);

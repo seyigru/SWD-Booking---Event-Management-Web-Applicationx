@@ -1,6 +1,7 @@
 import pool from '@/lib/db';
 import { requireRole } from '@/lib/auth';
 
+// returns all users excluding password_hash, admin only
 export async function GET() {
   try {
     const { user, error } = await requireRole('admin');

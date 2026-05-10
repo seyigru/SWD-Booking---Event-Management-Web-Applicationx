@@ -1,5 +1,6 @@
 import { destroySession } from '@/lib/session';
 
+// destroys the session and clears the cookie
 export async function POST() {
   try {
     await destroySession();
