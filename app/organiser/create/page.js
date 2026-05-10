@@ -2,7 +2,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+// form for organisers to create a new event, posts to /api/events
 export default function CreateEventPage() {
+  // one piece of state per field, controlled inputs feed straight into setters
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
@@ -10,12 +12,16 @@ export default function CreateEventPage() {
   const [capacity, setCapacity] = useState('');
   const [price, setPrice] = useState('');
   const [error, setError] = useState('');
+  // submitting flag disables the button while the request is in flight, stops duplicate creates
+  const [submitting, setSubmitting] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSubmitting(true);
 
+    // capacity and price come back as strings from the input, convert to numbers for the API
     const res = await fetch('/api/events', {
       method: 'POST',
       body: JSON.stringify({
@@ -29,11 +35,14 @@ export default function CreateEventPage() {
     });
     const data = await res.json();
 
+    // server returned a validation error, show the message and let the user try again
     if (!res.ok) {
       setError(data.message);
+      setSubmitting(false);
       return;
     }
 
+    // success, send them back to the dashboard where the new event will appear
     router.push('/organiser');
   };
 
@@ -77,7 +86,9 @@ export default function CreateEventPage() {
           value={price}
           onChange={(e) => setPrice(e.target.value)}
         />
-        <button type="submit">Create Event</button>
+        <button type="submit" disabled={submitting}>
+          {submitting ? 'Creating...' : 'Create Event'}
+        </button>
       </form>
     </div>
   );
