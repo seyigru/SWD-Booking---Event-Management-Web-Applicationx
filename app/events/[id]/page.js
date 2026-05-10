@@ -11,10 +11,14 @@ export default function EventDetailPage() {
 
   // pulls the event with organiser name and the live confirmed bookings count
   const fetchEvent = async () => {
-    const res = await fetch(`/api/events/${id}`);
-    const data = await res.json();
-    if (!res.ok) { setError(data.message); return; }
-    setEvent(data);
+    try {
+      const res = await fetch(`/api/events/${id}`);
+      const data = await res.json();
+      if (!res.ok) { setError(data.message); return; }
+      setEvent(data);
+    } catch (err) {
+      setError('Could not load event. Please try again');
+    }
   };
 
   // re-runs if the [id] in the URL changes, useful for client-side navigation between events
@@ -23,15 +27,19 @@ export default function EventDetailPage() {
   // posts a booking, the bookings API enforces role, capacity and double-book checks server-side
   const bookEvent = async () => {
     setError(''); setMessage('');
-    const res = await fetch('/api/bookings', {
-      method: 'POST',
-      body: JSON.stringify({ event_id: Number(id) }),
-    });
-    const data = await res.json();
-    if (!res.ok) { setError(data.message); return; }
-    setMessage('Booking confirmed!');
-    // refetch so the spots-remaining number updates on screen
-    fetchEvent();
+    try {
+      const res = await fetch('/api/bookings', {
+        method: 'POST',
+        body: JSON.stringify({ event_id: Number(id) }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.message); return; }
+      setMessage('Booking confirmed!');
+      // refetch so the spots-remaining number updates on screen
+      fetchEvent();
+    } catch (err) {
+      setError('Could not book event. Please try again');
+    }
   };
 
   // early returns keep the main render clean, only one of these branches runs at a time
