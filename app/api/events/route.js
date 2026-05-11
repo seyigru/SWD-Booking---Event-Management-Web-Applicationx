@@ -9,25 +9,29 @@ export async function GET(req) {
     const query = searchParams.get('query');
     const mine = searchParams.get('mine');
 
+    // confirmed bookings per event — drives the "spots remaining" count on the attendee browse page
+    const bookingsCountSql =
+      "(SELECT COUNT(*) FROM bookings b WHERE b.event_id = e.id AND b.status = 'confirmed') AS bookings_count";
+
     let rows;
     if (mine === 'true') {
       // dashboard mode, must be a logged-in organiser, filters by their user id
       const { user, error } = await requireRole('organiser');
       if (error) return error;
       [rows] = await pool.query(
-        'SELECT e.*, u.name AS organiser_name FROM events e JOIN users u ON e.organiser_id = u.id WHERE e.organiser_id = ? ORDER BY e.date ASC',
+        `SELECT e.*, u.name AS organiser_name, ${bookingsCountSql} FROM events e JOIN users u ON e.organiser_id = u.id WHERE e.organiser_id = ? ORDER BY e.date ASC`,
         [user.id]
       );
     } else if (query) {
       // search by title, parameterised LIKE so user input never goes into the SQL string
       [rows] = await pool.query(
-        'SELECT e.*, u.name AS organiser_name FROM events e JOIN users u ON e.organiser_id = u.id WHERE e.title LIKE ? ORDER BY e.date ASC',
+        `SELECT e.*, u.name AS organiser_name, ${bookingsCountSql} FROM events e JOIN users u ON e.organiser_id = u.id WHERE e.title LIKE ? ORDER BY e.date ASC`,
         [`%${query}%`]
       );
     } else {
       // public browse, all events with the organiser name joined in
       [rows] = await pool.query(
-        'SELECT e.*, u.name AS organiser_name FROM events e JOIN users u ON e.organiser_id = u.id ORDER BY e.date ASC'
+        `SELECT e.*, u.name AS organiser_name, ${bookingsCountSql} FROM events e JOIN users u ON e.organiser_id = u.id ORDER BY e.date ASC`
       );
     }
 
