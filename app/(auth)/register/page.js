@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useSession } from '@/components/SessionProvider';
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
@@ -11,6 +12,7 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { refreshSession } = useSession();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,6 +36,9 @@ export default function RegisterPage() {
       setError(data.message);
       return;
     }
+
+    // refresh navbar session before moving pages
+    await refreshSession();
 
     router.push('/attendee');
   };

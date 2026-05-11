@@ -1,30 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useSession } from '@/components/SessionProvider';
 
-// top bar - This will change links based on role from /api/auth/session
+// top bar — this will change links based on role from SessionProvider
 export default function Navbar() {
-  const [user, setUser] = useState(null);
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const res = await fetch('/api/auth/session');
-        const data = await res.json();
-        if (!cancelled) setUser(data.user ?? null);
-      } catch {
-        if (!cancelled) setUser(null);
-      } finally {
-        if (!cancelled) setReady(true);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const { user, setUser, ready, refreshSession } = useSession();
 
   async function handleLogout() {
     try {
@@ -32,6 +13,9 @@ export default function Navbar() {
     } catch {
       // still send them home even if logout failed weirdly
     }
+    // update nav straight away, then bounce home
+    setUser(null);
+    await refreshSession();
     window.location.href = '/';
   }
 

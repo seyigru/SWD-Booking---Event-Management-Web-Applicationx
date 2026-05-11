@@ -1,5 +1,6 @@
 import Navbar from '@/components/Navbar';
 import '@/styles/globals.css';
+import { SessionProvider } from '@/components/SessionProvider';
 
 export const metadata = {
   title: 'EventHub',
@@ -10,8 +11,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <Navbar />
-        {children}
+        <SessionProvider>
+          <Navbar />
+          {children}
+        </SessionProvider>
       </body>
     </html>
   );

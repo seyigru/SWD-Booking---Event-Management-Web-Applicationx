@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useSession } from '@/components/SessionProvider';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -9,6 +10,7 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { refreshSession } = useSession();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,6 +28,9 @@ export default function LoginPage() {
       setError(data.message);
       return;
     }
+
+    // refresh navbar session before moving pages
+    await refreshSession();
 
     if (data.role === 'admin') router.push('/admin');
     else if (data.role === 'organiser') router.push('/organiser');
