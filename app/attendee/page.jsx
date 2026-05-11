@@ -7,25 +7,11 @@ import ErrorMessage from '@/components/ErrorMessage';
 
 // attendee home — list all events and let them book from the card
 export default function AttendeeBrowsePage() {
+  const router = useRouter();
   const [events, setEvents] = useState([]);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const router = useRouter();
-
-  // bounce anyone not logged in as an attendee back to login
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await fetch('/api/auth/me');
-        if (!res.ok) { router.push('/login'); return; }
-        const user = await res.json();
-        if (user.role !== 'attendee') router.push('/login');
-      } catch (err) {
-        router.push('/login');
-      }
-    };
-    checkAuth();
-  }, [router]);
+  const [ready, setReady] = useState(false);
 
   async function loadEvents() {
     setError('');
@@ -44,10 +30,41 @@ export default function AttendeeBrowsePage() {
   }
 
   useEffect(() => {
-    loadEvents();
+    let cancelled = false;
+
+    // quick session check so organisers/admins dont sit on attendee pages
+    (async () => {
+      try {
+        const res = await fetch('/api/auth/session');
+        const data = await res.json();
+        const user = data.user ?? null;
+
+        if (cancelled) return;
+
+        if (!user) {
+          router.push('/login');
+          return;
+        }
+
+        if (user.role !== 'attendee') {
+          router.push('/');
+          return;
+        }
+
+        setReady(true);
+        await loadEvents();
+      } catch {
+        if (!cancelled) router.push('/login');
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function bookEvent(event_id) {
+    if (!ready) return;
     setError('');
     setSuccess('');
     try {
@@ -60,7 +77,7 @@ export default function AttendeeBrowsePage() {
       try {
         data = await res.json();
       } catch {
-        // non json body 
+        // non json body
       }
       if (!res.ok) {
         setError(data.message || 'Booking failed');

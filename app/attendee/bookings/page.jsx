@@ -7,24 +7,10 @@ import ErrorMessage from '@/components/ErrorMessage';
 
 // logged in attendee sees their past and current bookings and can cancel confirmed ones
 export default function MyBookingsPage() {
+  const router = useRouter();
   const [bookings, setBookings] = useState([]);
   const [error, setError] = useState('');
-  const router = useRouter();
-
-  // bounce anyone not logged in as an attendee back to login
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await fetch('/api/auth/me');
-        if (!res.ok) { router.push('/login'); return; }
-        const user = await res.json();
-        if (user.role !== 'attendee') router.push('/login');
-      } catch (err) {
-        router.push('/login');
-      }
-    };
-    checkAuth();
-  }, [router]);
+  const [ready, setReady] = useState(false);
 
   async function loadBookings() {
     setError('');
@@ -42,10 +28,41 @@ export default function MyBookingsPage() {
   }
 
   useEffect(() => {
-    loadBookings();
+    let cancelled = false;
+
+    // make sure its a logged in attendee before showing bookings
+    (async () => {
+      try {
+        const res = await fetch('/api/auth/session');
+        const data = await res.json();
+        const user = data.user ?? null;
+
+        if (cancelled) return;
+
+        if (!user) {
+          router.push('/login');
+          return;
+        }
+
+        if (user.role !== 'attendee') {
+          router.push('/');
+          return;
+        }
+
+        setReady(true);
+        await loadBookings();
+      } catch {
+        if (!cancelled) router.push('/login');
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function cancelBooking(id) {
+    if (!ready) return;
     setError('');
     try {
       const res = await fetch(`/api/bookings/${id}`, { method: 'DELETE' });
