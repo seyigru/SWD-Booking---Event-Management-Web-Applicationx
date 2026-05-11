@@ -39,6 +39,10 @@ export async function DELETE(req, { params }) {
     if (!check[0])
       return Response.json({ message: 'User not found' }, { status: 404 });
 
+    // delete in FK-safe order: attendee bookings → bookings on their events → events → sessions → user
+    await pool.query('DELETE FROM bookings WHERE user_id = ?', [id]);
+    await pool.query('DELETE FROM bookings WHERE event_id IN (SELECT id FROM events WHERE organiser_id = ?)', [id]);
+    await pool.query('DELETE FROM events WHERE organiser_id = ?', [id]);
     await pool.query('DELETE FROM sessions WHERE user_id = ?', [id]);
     await pool.query('DELETE FROM users WHERE id = ?', [id]);
     return Response.json({ message: 'User deleted' }, { status: 200 });
