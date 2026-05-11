@@ -1,13 +1,18 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useSession } from '@/components/SessionProvider';
 
 // top bar — this will change links based on role from SessionProvider
 export default function Navbar() {
   const { user, setUser, ready, refreshSession } = useSession();
+  // disables the logout button while a request is in flight so rapid clicks dont fire multiple logouts
+  const [loggingOut, setLoggingOut] = useState(false);
 
   async function handleLogout() {
+    if (loggingOut) return;
+    setLoggingOut(true);
     try {
       await fetch('/api/auth/logout', { method: 'POST' });
     } catch {
@@ -61,8 +66,8 @@ export default function Navbar() {
                 Admin Panel
               </Link>
             ) : null}
-            <button type="button" className="navbar__logout btn btn--ghost" onClick={handleLogout}>
-              Logout
+            <button type="button" className="navbar__logout btn btn--ghost" onClick={handleLogout} disabled={loggingOut}>
+              {loggingOut ? 'Logging out...' : 'Logout'}
             </button>
           </nav>
         )}
