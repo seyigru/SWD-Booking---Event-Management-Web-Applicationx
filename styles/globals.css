@@ -289,6 +289,106 @@ form {
   margin: 0 0 18px;
 }
 
+/* dashboard tables (admin user list, organiser event list) */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 14px;
+  background: #f3f1ec;
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--card-shadow);
+}
+
+.data-table th,
+.data-table td {
+  padding: 12px 14px;
+  text-align: left;
+  font-size: 0.95rem;
+  border-bottom: 1px solid var(--border-soft);
+  vertical-align: middle;
+}
+
+.data-table th {
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: rgba(217, 212, 204, 0.35);
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tbody tr:hover {
+  background: rgba(193, 96, 59, 0.05);
+}
+
+.data-table select {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  padding: 6px 8px;
+  border: 1px solid var(--border-soft);
+  border-radius: 3px;
+  background: #fdfcfa;
+  color: var(--text-main);
+  margin-right: 8px;
+}
+
+.data-table__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.data-table__actions a,
+.data-table__actions button {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 3px;
+  border: 1px solid var(--border-soft);
+  background: transparent;
+  color: var(--text-main);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.data-table__actions a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.data-table__actions .btn--danger {
+  border-color: var(--error-text);
+  color: var(--error-text);
+}
+
+.data-table__actions .btn--danger:hover {
+  background: var(--error-text);
+  color: #fdfcfa;
+}
+
+/* top toolbar for dashboard pages — title row sits above this */
+.dashboard-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.dashboard-toolbar .btn--primary {
+  text-decoration: none;
+  display: inline-block;
+}
+
 /* small screens*/
 @media (max-width: 600px) {
   .navbar__inner {

@@ -59,9 +59,9 @@ export default function AdminPage() {
 
   return (
     <div className="page-container">
-      <h1>Admin Dashboard</h1>
+      <h1 className="page-title">Admin Dashboard</h1>
       {error && <p className="error-msg">{error}</p>}
-      <table>
+      <table className="data-table">
         <thead>
           <tr>
             <th>Name</th>
@@ -77,15 +77,17 @@ export default function AdminPage() {
               <td>{user.email}</td>
               <td>{user.role}</td>
               <td>
-                <select
-                  value={user.role}
-                  onChange={(e) => changeRole(user.id, e.target.value)}
-                >
-                  <option value="attendee">Attendee</option>
-                  <option value="organiser">Organiser</option>
-                  <option value="admin">Admin</option>
-                </select>
-                <button onClick={() => deleteUser(user.id)}>Delete</button>
+                <div className="data-table__actions">
+                  <select
+                    value={user.role}
+                    onChange={(e) => changeRole(user.id, e.target.value)}
+                  >
+                    <option value="attendee">Attendee</option>
+                    <option value="organiser">Organiser</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                  <button className="btn--danger" onClick={() => deleteUser(user.id)}>Delete</button>
+                </div>
               </td>
             </tr>
           ))}
