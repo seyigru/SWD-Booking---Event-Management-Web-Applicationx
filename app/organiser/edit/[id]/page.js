@@ -18,25 +18,15 @@ export default function EditEventPage() {
   // submitting flag disables save while the PUT is in flight, stops duplicate updates
   const [submitting, setSubmitting] = useState(false);
 
-  // bounce anyone not logged in as an organiser back to login
+  // run auth first, then load the event only if the user is a valid organiser
   useEffect(() => {
-    const checkAuth = async () => {
+    const init = async () => {
       try {
-        const res = await fetch('/api/auth/me');
-        if (!res.ok) { router.push('/login'); return; }
-        const user = await res.json();
-        if (user.role !== 'organiser') router.push('/login');
-      } catch (err) {
-        router.push('/login');
-      }
-    };
-    checkAuth();
-  }, [router]);
+        const authRes = await fetch('/api/auth/me');
+        if (!authRes.ok) { router.push('/login'); return; }
+        const user = await authRes.json();
+        if (user.role !== 'organiser') { router.push('/login'); return; }
 
-  // on mount, load the event and copy each field into state so the inputs show the current values
-  useEffect(() => {
-    const fetchEvent = async () => {
-      try {
         const res = await fetch(`/api/events/${id}`);
         const data = await res.json();
         if (!res.ok) { setError(data.message); return; }
@@ -51,8 +41,8 @@ export default function EditEventPage() {
         setError('Could not load event. Please try again');
       }
     };
-    fetchEvent();
-  }, [id]);
+    init();
+  }, [id, router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
