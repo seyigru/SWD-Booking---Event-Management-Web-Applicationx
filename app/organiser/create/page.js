@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 // form for organisers to create a new event, posts to /api/events
@@ -15,6 +15,20 @@ export default function CreateEventPage() {
   // submitting flag disables the button while the request is in flight, stops duplicate creates
   const [submitting, setSubmitting] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('/api/auth/me');
+        if (!res.ok) { router.push('/login'); return; }
+        const user = await res.json();
+        if (user.role !== 'organiser') router.push('/login');
+      } catch (err) {
+        router.push('/login');
+      }
+    };
+    checkAuth();
+  }, [router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

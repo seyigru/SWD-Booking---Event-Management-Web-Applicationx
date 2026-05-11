@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import EventCard from '@/components/EventCard';
 import ErrorMessage from '@/components/ErrorMessage';
 
@@ -9,6 +10,21 @@ export default function AttendeeBrowsePage() {
   const [events, setEvents] = useState([]);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('/api/auth/me');
+        if (!res.ok) { router.push('/login'); return; }
+        const user = await res.json();
+        if (user.role !== 'attendee') router.push('/login');
+      } catch (err) {
+        router.push('/login');
+      }
+    };
+    checkAuth();
+  }, [router]);
 
   async function loadEvents() {
     setError('');
