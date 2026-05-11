@@ -22,9 +22,9 @@
    }
  
    useEffect(() => {
-     refreshSession();
-     // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, []);
+    const load = async () => { await refreshSession(); };
+    load();
+  }, []);
  
    const value = useMemo(() => {
      return { user, setUser, ready, refreshSession };
