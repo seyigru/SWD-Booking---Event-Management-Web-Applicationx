@@ -98,10 +98,7 @@ export default function HomePage() {
   return (
     <div className="page-container">
       <h1 className="page-title">Upcoming events</h1>
-      <p className="muted" style={{ marginBottom: '24px', maxWidth: '38rem', lineHeight: 1.5 }}>
-        Anyone can see the list. Booking only works when you are logged in as an attendee — otherwise Book
-        sends you to the login page.
-      </p>
+      {/* anyone can see the list, booking only works when logged in as an attendee, otherwise Book sends them to login */}
 
       <ErrorMessage message={error} />
       {success ? <p className="success-msg">{success}</p> : null}
