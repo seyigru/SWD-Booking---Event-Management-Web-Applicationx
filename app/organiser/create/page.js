@@ -16,6 +16,7 @@ export default function CreateEventPage() {
   const [submitting, setSubmitting] = useState(false);
   const router = useRouter();
 
+  // bounce anyone not logged in as an organiser back to login
   useEffect(() => {
     const checkAuth = async () => {
       try {

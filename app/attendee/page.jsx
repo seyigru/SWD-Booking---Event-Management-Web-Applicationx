@@ -12,6 +12,7 @@ export default function AttendeeBrowsePage() {
   const [success, setSuccess] = useState('');
   const router = useRouter();
 
+  // bounce anyone not logged in as an attendee back to login
   useEffect(() => {
     const checkAuth = async () => {
       try {

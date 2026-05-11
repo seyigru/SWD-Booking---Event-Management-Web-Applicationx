@@ -11,6 +11,7 @@ export default function MyBookingsPage() {
   const [error, setError] = useState('');
   const router = useRouter();
 
+  // bounce anyone not logged in as an attendee back to login
   useEffect(() => {
     const checkAuth = async () => {
       try {

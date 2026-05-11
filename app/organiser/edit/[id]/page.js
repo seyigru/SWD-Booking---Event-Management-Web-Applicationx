@@ -18,6 +18,7 @@ export default function EditEventPage() {
   // submitting flag disables save while the PUT is in flight, stops duplicate updates
   const [submitting, setSubmitting] = useState(false);
 
+  // bounce anyone not logged in as an organiser back to login
   useEffect(() => {
     const checkAuth = async () => {
       try {
