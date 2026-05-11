@@ -57,7 +57,7 @@ export default function LoginPage() {
         />
         <button type="submit" disabled={loading}>Login</button>
       </form>
-      <p>Don't have an account? <Link href="/register">Register</Link></p>
+      <p>Don&apos;t have an account? <Link href="/register">Register</Link></p>
     </div>
   );
 }
