@@ -39,6 +39,7 @@ export default function CreateEventPage() {
     // capacity and price come back as strings from the input, convert to numbers for the API
     const res = await fetch('/api/events', {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         title,
         description,

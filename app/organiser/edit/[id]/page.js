@@ -63,6 +63,7 @@ export default function EditEventPage() {
       // capacity and price are strings from the inputs, convert before sending
       const res = await fetch(`/api/events/${id}`, {
         method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title,
           description,

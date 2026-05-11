@@ -30,6 +30,7 @@ export default function AdminPage() {
     try {
       const res = await fetch(`/api/users/${id}`, {
         method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ role }),
       });
       const data = await res.json();
