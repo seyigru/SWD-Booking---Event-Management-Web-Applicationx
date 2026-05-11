@@ -1,11 +1,27 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 // dashboard for organisers, lists their own events with edit and delete actions
 export default function OrganiserPage() {
   const [events, setEvents] = useState([]);
   const [error, setError] = useState('');
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('/api/auth/me');
+        if (!res.ok) { router.push('/login'); return; }
+        const user = await res.json();
+        if (user.role !== 'organiser') router.push('/login');
+      } catch (err) {
+        router.push('/login');
+      }
+    };
+    checkAuth();
+  }, [router]);
 
   // pulls only the logged-in organiser's events, server reads the session and filters
   const fetchEvents = async () => {
